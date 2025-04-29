@@ -265,7 +265,7 @@
 
             </section>
 
-            <section class="bg-white p-6 mb-6 rounded-lg shadow-md border border-gray-200 flex flex-col">
+            <section class=" p-6 mb-6 rounded-lg shadow-md border-4 bg-orange-100 border-amber-400 flex flex-col">
                 <div class="flex justify-between items-center border-b pb-3 mb-5">
                     <h1 class="text-2xl font-semibold text-gray-800">
                         Existing Raffles
@@ -282,7 +282,7 @@
                      {:else}
                         {#each allRaffles as raffle}
                             {#if (raffle.prize_money != 0 && (!raffle.winning_ticket || ownsTicket(raffle.winning_ticket))) || showCompletedRaffles}
-                                <div class="border-2 border-gray-200 bg-gradient-to-br from-amber-200 to-red-400 rounded-lg p-4 shadow-xl transition-shadow hover:shadow-md">
+                                <div class="border-2 border-amber-400 bg-gradient-to-br from-amber-200 to-red-400 rounded-lg p-4 shadow-xl transition-shadow hover:shadow-md">
                                     <div class="flex justify-between items-start mb-3">
                                         <a href={getObjectExplorerUrl(explorerUrl, raffle.id)} target="_blank" rel="noopener noreferrer" class="text-sm font-mono text-slate-500 hover:underline break-all pr-4" title={`Raffle ID: ${raffle.id}`}>
                                              {shortenHex(raffle.id, 8)}
