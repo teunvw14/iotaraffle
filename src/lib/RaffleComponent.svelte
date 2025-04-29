@@ -216,7 +216,7 @@
                                 <p>Account: <span class="font-mono bg-gray-200 px-1 rounded">{shortenHex(activeWalletAccount.address, 4)}</span></p>
                                 <p class="mt-1">Balance: <span class="font-semibold">{nanosToIota(activeWalletAccountBalance)} IOTA</span></p>
                             {:else}
-                                <p class="italic text-gray-500">Connect wallet to see details.</p>
+                                <p class="italic text-gray-500">Connect wallet to create a raffle, or join existing ones.</p>
                             {/if}
                         </div>
                     </div>
@@ -298,15 +298,20 @@
                                     </div>
 
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 mb-3 text-sm">
-                                        <p class="text-gray-800"><span class="font-medium">Prize Pool:</span> <span class="font-bold text-base">{nanosToIota(raffle.prize_money)} IOTA</span></p>
-                                        <p class="text-gray-600"><span class="font-medium">Ticket Price:</span> {nanosToIota(raffle.ticket_price)} IOTA</p>
-                                        <p class="text-gray-600"><span class="font-medium">Tickets Sold:</span> {raffle.tickets_sold}</p>
-                                         {#if raffle.winning_ticket == null && raffle.redemption_timestamp_ms - onChainClockTimestampMs > 0}
-                                             <p class="text-gray-600"><span class="font-medium">Ends in:</span> <span class="font-semibold text-blue-700">{timeHumanReadable(raffle.redemption_timestamp_ms - onChainClockTimestampMs)}</span></p>
-                                              <p class="text-gray-600 col-span-1 sm:col-span-2"><span class="font-medium">Ticket Expected Value:</span> ~{Math.round(1000 * nanosToIota(raffle.prize_money/(raffle.tickets_sold + 1)))/1000} IOTA</p>
-                                        {:else if raffle.winning_ticket != null}
-                                            <p class="text-gray-600 col-span-1 sm:col-span-2"><span class="font-medium">Winning Ticket:</span> <span class="font-mono bg-gray-100 px-1 rounded">{shortenHex(raffle.winning_ticket, 6)}</span></p>
-                                         {/if}
+                                        <div class="flex flex-row sm:flex-col sm:justify-between pb-1 ">
+                                            <p class="text-gray-800 text-2xl mr-2"><span class="font-bold">Prize Pool:</span> </p>
+                                            <p class="text-green-800 text-2xl sm:text-4xl">{nanosToIota(raffle.prize_money)} IOTA</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-gray-800 text-xl"><span class="font-bold">Ticket Price:</span> {nanosToIota(raffle.ticket_price)} IOTA</p>
+                                            <p class="text-gray-800"><span class="font-bold">Tickets Sold:</span> {raffle.tickets_sold}</p>
+                                            {#if raffle.winning_ticket == null && raffle.redemption_timestamp_ms - onChainClockTimestampMs > 0}
+                                            <p class="text-gray-800 col-span-1 sm:col-span-2"><span class="font-bold">Ticket Expected Value:</span> ~{Math.round(1000 * nanosToIota(raffle.prize_money/(raffle.tickets_sold + 1)))/1000} IOTA</p>
+                                            <p class="text-gray-800"><span class="font-bold">Ends in:</span> <span class="font-semibold text-blue-700">{timeHumanReadable(raffle.redemption_timestamp_ms - onChainClockTimestampMs)}</span></p>
+                                           {:else if raffle.winning_ticket != null}
+                                               <p class="text-gray-800 col-span-1 sm:col-span-2"><span class="font-bold">Winning Ticket:</span> <span class="font-mono bg-gray-100 px-1 rounded">{shortenHex(raffle.winning_ticket, 6)}</span></p>
+                                            {/if}
+                                        </div>
                                     </div>
 
                                     <div class="flex flex-wrap gap-2 items-center pt-3 border-t border-amber-200 mt-3">
