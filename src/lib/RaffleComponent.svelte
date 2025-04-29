@@ -31,7 +31,7 @@
 
     const iotaClient = new IotaClient({ url: getFullnodeUrl('testnet') });
 
-    async function connectWallet() {
+    async function initializeWallet() {
         let wallets = getWallets().get();
         if (wallets.length == 0) {
             console.log("No wallets found to connect to. Make sure you installed an IOTA web wallet.");
@@ -43,15 +43,18 @@
             console.log("No IOTA wallets found to connect to. Make sure you installed an IOTA web wallet.");
             return;
         }
+        console.log(activeWallet)
+    }
+
+    async function connectWallet() {
         activeWallet.features['standard:connect'].connect();
         activeWallet.features['standard:events'].on("change", () => {
             activeWalletAccount = activeWallet.accounts[0];
             updateBalance();
         });
-
         delayedRenewState();
     }
-    
+
     async function initOnChainClockTimestampMs() {
         let clock = await iotaClient.getObject({id: '0x06', options: {showContent: true}});
         onChainClockTimestampMs = parseFloat(clock.data?.content.fields["timestamp_ms"]);
@@ -73,10 +76,8 @@
         }
     }
 
-    async function ownsTicket(ticketId) {
-        let ticket = await iotaClient.getObject({id: ticketId, options: {showOwner: true}});
-        let res = ticket.data?.owner["AddressOwner"] == activeWalletAccount.address;
-        return res;
+    function ownsTicket(ticketId) {
+        return !!ticketId && activeWalletOwnedTickets.includes(ticketId);
     }
 
     interface Raffle {
@@ -141,29 +142,39 @@
         let raffle_ids = raffles_app_state.data?.content.fields["raffles"];
 
         let raffles = await iotaClient.multiGetObjects({ids: raffle_ids, options: {showContent: true}});
-        allRaffles = await parseRaffles(raffles);
-        allRaffles.sort((raffle_1: Raffle, raffle_2: Raffle) => { 
-            if(raffle_1.prize_money == 0) {
-                return 1
-            } else if(raffle_2.prize_money == 0) {
-                return -1
-            } else {
-                return raffle_1.redemption_timestamp_ms - raffle_2.redemption_timestamp_ms;
-            }
-        })
+        let parsedRaffles = await parseRaffles(raffles);
 
+        let winningUnclaimedRaffles = parsedRaffles.filter((raffle: Raffle) => {
+            return !!raffle.winning_ticket && raffle.prize_money > 0 && ownsTicket(raffle.winning_ticket)
+        });
+        let unresolvedRaffles = parsedRaffles.filter((raffle: Raffle) => {
+            return !raffle.winning_ticket
+        })
+        let lostUnclaimedRaffles = parsedRaffles.filter((raffle: Raffle) => {
+            return !!raffle.winning_ticket && raffle.prize_money > 0 && !ownsTicket(raffle.winning_ticket)
+        });
+        let completedRaffles = parsedRaffles.filter((raffle: Raffle) => {
+            return raffle.prize_money == 0
+        });
+        winningUnclaimedRaffles.sort((r1, r2) => r1.redemption_timestamp_ms - r2.redemption_timestamp_ms);
+        unresolvedRaffles.sort((r1, r2) => r1.redemption_timestamp_ms - r2.redemption_timestamp_ms);
+        lostUnclaimedRaffles.sort((r1, r2) => r1.redemption_timestamp_ms - r2.redemption_timestamp_ms);
+        completedRaffles.sort((r1, r2) => r1.redemption_timestamp_ms - r2.redemption_timestamp_ms);
+        
+        allRaffles = winningUnclaimedRaffles.concat(unresolvedRaffles).concat(lostUnclaimedRaffles).concat(completedRaffles);
+        console.log(allRaffles)
         updateWinningTicketOwner();
     }
 
     onMount(() => {
-        connectWallet();
+        initializeWallet();
         updateRaffles();
         initOnChainClockTimestampMs();
     })
 </script>
 
 <div class="min-h-screen bg-gray-100 p-4 md:p-8 font-sans">
-    <div class="max-w-5xl mx-auto">
+    <div class="max-w-2xl mx-auto">
 
         <div class="flex justify-between mb-4 mx-4">
             <h1 class="text-2xl">🎡 IOTA Raffle 🎡</h1>
@@ -176,17 +187,16 @@
 
             <section class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
                 <h1 class="text-2xl font-semibold text-gray-800 mb-5 border-b pb-3">
-                    New Raffle
+                    Create New Raffle
                 </h1>
 
                 <div class="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-md">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <button
                             onclick={connectWallet}
-                            class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out disabled:opacity-60 disabled:cursor-not-allowed"
-                            disabled={!!activeWallet}
+                            class="bg-orange-600 hover:bg-orange-400 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out disabled:opacity-60 disabled:cursor-not-allowed"
                         >
-                            {activeWallet ? 'Wallet Connected ✅' : 'Connect Wallet'}
+                            {!!activeWalletAccount ? 'Wallet Connected ✅' : 'Connect Wallet'}
                         </button>
                         <div class="text-sm text-gray-700 text-center sm:text-right">
                             {#if activeWalletAccount}
@@ -205,7 +215,7 @@
                             <label for="initialLiquidity" class="block text-sm font-medium text-gray-700 mb-1">Initial Liquidity (min 5 IOTA)</label>
                             <input id="initialLiquidity" bind:value={newRaffleInitialLiquidity}
                                 type="number" lang="en" placeholder="5.0" step="0.000000001" min="5" required
-                                class="mt-1 block w-full rounded-md border-2 shadow-sm border-indigo-400 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-2"
+                                class="mt-1 block w-full rounded-md border-2 shadow-sm border-indigo-200 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-2"
                             >
                         </div>
 
@@ -213,20 +223,20 @@
                             <label for="ticketPrice" class="block text-sm font-medium text-gray-700 mb-1">Ticket Price (min 0.01 IOTA)</label>
                             <input id="ticketPrice" bind:value={newRaffleTicketPrice}
                                 type="number" lang="en" placeholder="0.1" step="0.000000001" min="0.01" required
-                                class="mt-1 block w-full rounded-md border-2 shadow-sm border-indigo-400 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-2"
+                                class="mt-1 block w-full rounded-md border-2 shadow-sm border-indigo-200 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-2"
                             >
                         </div>
 
                         <div>
-                            <label for="duration" class="block text-sm font-medium text-gray-700 mb-1">Raffle Duration (seconds, min 10)</label>
+                            <label for="duration" class="block text-sm font-medium text-gray-700 mb-1">Raffle Duration (seconds)</label>
                             <input id="duration" bind:value={newRaffleDurationSec}
                                 type="number" lang="en" placeholder="100" step="1" min="10" required
-                                class="mt-1 block w-full rounded-md border-2 shadow-sm border-indigo-400 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-2"
+                                class="mt-1 block w-full rounded-md border-2 shadow-sm border-indigo-200 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-2"
                             >
                         </div>
 
                         <div class="pt-3 w-full">
-                             <button
+                             <button    
                                  onclick={() => {createRaffle(iotaClient, activeWallet, activeWalletAccount, newRaffleInitialLiquidityNanos, newRaffleTicketPriceNanos, newRaffleDurationSec); delayedRenewState()}}
                                  class="w-full h-16 bg-indigo-600 hover:bg-indigo-700 text-white text-xl font-bold py-2 px-6 rounded transition duration-150 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed hover:cursor-pointer"
                                  disabled={!activeWalletAccount}
@@ -257,7 +267,7 @@
                         <p class="text-center text-gray-500 py-10">No active raffles found.</p>
                      {:else}
                         {#each allRaffles as raffle}
-                            {#if raffle.prize_money != 0 || showCompletedRaffles}
+                            {#if (raffle.prize_money != 0 && (!raffle.winning_ticket || ownsTicket(raffle.winning_ticket))) || showCompletedRaffles}
                                 <div class="border border-amber-300 bg-amber-50 rounded-lg p-4 shadow-sm transition-shadow hover:shadow-md">
                                     <div class="flex justify-between items-start mb-3">
                                         <a href={getObjectExplorerUrl(explorerUrl, raffle.id)} target="_blank" rel="noopener noreferrer" class="text-sm font-mono text-slate-500 hover:underline break-all pr-4" title={`Raffle ID: ${raffle.id}`}>
@@ -266,7 +276,7 @@
                                         {#if raffle.prize_money == 0 && raffle.winning_ticket != null}
                                              <span class="text-xs font-semibold bg-gray-400 text-white px-2 py-0.5 rounded-full whitespace-nowrap">Completed</span>
                                          {:else if raffle.winning_ticket != null}
-                                             <span class="text-xs font-semibold bg-green-600 text-white px-2 py-0.5 rounded-full whitespace-nowrap">Resolved</span>
+                                             <span class="text-xs font-semibold bg-green-600 text-white px-2 py-0.5 rounded-full whitespace-nowrap">Prize Ready to Claim</span>
                                         {:else if raffle.redemption_timestamp_ms - onChainClockTimestampMs <= 0}
                                             <span class="text-xs font-semibold bg-purple-500 text-white px-2 py-0.5 rounded-full whitespace-nowrap">Ready to resolve</span>
                                         {:else}
@@ -280,7 +290,7 @@
                                         <p class="text-gray-600"><span class="font-medium">Tickets Sold:</span> {raffle.tickets_sold}</p>
                                          {#if raffle.winning_ticket == null && raffle.redemption_timestamp_ms - onChainClockTimestampMs > 0}
                                              <p class="text-gray-600"><span class="font-medium">Ends in:</span> <span class="font-semibold text-blue-700">{timeHumanReadable(raffle.redemption_timestamp_ms - onChainClockTimestampMs)}</span></p>
-                                              <p class="text-gray-600 col-span-1 sm:col-span-2"><span class="font-medium">Next ticket expected Value:</span> ~{Math.round(1000 * nanosToIota(raffle.prize_money/(raffle.tickets_sold + 1)))/1000} IOTA</p>
+                                              <p class="text-gray-600 col-span-1 sm:col-span-2"><span class="font-medium">Ticket Expected Value:</span> ~{Math.round(1000 * nanosToIota(raffle.prize_money/(raffle.tickets_sold + 1)))/1000} IOTA</p>
                                         {:else if raffle.winning_ticket != null}
                                             <p class="text-gray-600 col-span-1 sm:col-span-2"><span class="font-medium">Winning Ticket:</span> <span class="font-mono bg-gray-100 px-1 rounded">{shortenHex(raffle.winning_ticket, 6)}</span></p>
                                          {/if}
@@ -293,7 +303,11 @@
                                                 disabled={!activeWalletAccount || raffle.ticket_price > activeWalletAccountBalance}
                                                 class="w-full bg-green-500 hover:bg-green-600 text-white text-md font-semibold py-1.5 px-3 rounded transition duration-150 ease-in-out cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
-                                            Buy Ticket ({nanosToIota(raffle.ticket_price)} IOTA) 🎫
+                                            {#if raffle.redemption_timestamp_ms - onChainClockTimestampMs < 0}
+                                                Buy First Ticket To Claim Prize Pool ({nanosToIota(raffle.ticket_price)} IOTA) 🎫
+                                            {:else}
+                                                Buy Ticket ({nanosToIota(raffle.ticket_price)} IOTA) 🎫
+                                            {/if}
                                             </button>
                                         {/if}
 
@@ -303,7 +317,7 @@
                                                 disabled={!activeWalletAccount}
                                                 class="w-full bg-yellow-400 hover:bg-yellow-500 text-black text-md font-bold py-1.5 px-3 rounded transition duration-150 ease-in-out cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed animate-pulse"
                                             >
-                                                🎉 Claim Prize!
+                                                💰 Claim Prize ({nanosToIota(raffle.prize_money)} IOTA) 💰
                                             </button>
                                         {/if}
 
