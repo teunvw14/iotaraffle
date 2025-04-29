@@ -13,16 +13,20 @@
     let activeWallet = $state(null);
     let activeWalletAccount = $state(null);
     let activeWalletAccountBalance = $state(0);
+
     let newRaffleInitialLiquidity = $state(5);
     let newRaffleInitialLiquidityNanos = $derived(newRaffleInitialLiquidity * 1_000_000_000)
     let newRaffleTicketPrice = $state(0.1);
     let newRaffleTicketPriceNanos = $derived(newRaffleTicketPrice * 1_000_000_000)
     let newRaffleDurationSec = $state(100);
+
     let resultText = $state("");
+    
     let explorerUrl = $state("");
     let onChainClockTimestampMs = $state(0);
 
     let allRaffles = $state([]);
+    let showCompletedRaffles = $state(false);
 
     const iotaClient = new IotaClient({ url: getFullnodeUrl('testnet') });
 
@@ -219,9 +223,15 @@
     <h1>
         Existing Raffles
     </h1>
+    <div class="flex flex-row">
+        <p class="mr-2">
+            Show completed Raffles
+        </p>
+        <input type="checkbox" bind:checked={showCompletedRaffles}>
+    </div>
 
     {#each allRaffles as raffle}
-    {#if raffle.prize_money != 0}
+    {#if raffle.prize_money != 0 || showCompletedRaffles}
     <div class="border-2 border-amber-800 m-2">
         <a href="https://explorer.rebased.iota.org/object/{raffle.id}" target="_blank"><p>{shortenHex(raffle.id)}</p></a>
         <h1>Prize pool is: {nanosToIota(raffle.prize_money)} IOTA</h1>
