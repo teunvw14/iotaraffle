@@ -234,9 +234,9 @@
                         </div>
 
                         <div>
-                            <label for="ticketPrice" class="block text-sm font-medium text-gray-700 mb-1">Ticket Price (min 0.01 IOTA)</label>
+                            <label for="ticketPrice" class="block text-sm font-medium text-gray-700 mb-1">Ticket Price</label>
                             <input id="ticketPrice" bind:value={newRaffleTicketPrice}
-                                type="number" lang="en" placeholder="0.1" step="0.000000001" min="0.01" required
+                                type="number" lang="en" placeholder="0.1" step="0.000000001" min="0.0" required
                                 class="mt-1 block w-full rounded-md border-2 shadow-sm bg-white border-indigo-200 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-2"
                             >
                         </div>
