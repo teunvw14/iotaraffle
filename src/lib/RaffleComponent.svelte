@@ -228,7 +228,7 @@
 
             <section class="bg-blue-100 p-6 rounded-lg shadow-md border-4 border-blue-300">
                 <h1 class="text-2xl font-semibold text-gray-800 mb-5 border-b pb-3">
-                    Create New Raffle
+                    Create New Raffle or Giveaway
                 </h1>
 
                 <div class="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-md">
