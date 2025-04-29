@@ -3,7 +3,7 @@
     import { getFullnodeUrl, IotaClient, type IotaObjectResponse } from '@iota/iota-sdk/client';
     import { Transaction } from '@iota/iota-sdk/transactions';
     import { onMount } from 'svelte';
-    import {nanosToIota, shortenHex, timeHumanReadable, getObjectExplorerUrl} from '$lib/util'
+    import { nanosToIota, shortenHex, timeHumanReadable, getObjectExplorerUrl, roundFractional } from '$lib/util'
     import { createRaffle, buyTicket, resolveRaffle, claimRafflePrize } from '$lib/smart_contract_calls' 
 
     let PACKAGE_ID = "0x907230b93bd2bb30b0aae756831464d6a514cf0bf12b9253840d6757e9c65164";
@@ -300,13 +300,13 @@
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 mb-3 text-sm">
                                         <div class="flex flex-row sm:flex-col sm:justify-between pb-1 ">
                                             <p class="text-gray-800 text-2xl mr-2"><span class="font-bold">Prize Pool:</span> </p>
-                                            <p class="text-green-800 text-2xl sm:text-4xl">{nanosToIota(raffle.prize_money)} IOTA</p>
+                                            <p class="text-green-800 text-2xl sm:text-4xl">{roundFractional(nanosToIota(raffle.prize_money), 2)} IOTA</p>
                                         </div>
                                         <div>
                                             <p class="text-gray-800 text-xl"><span class="font-bold">Ticket Price:</span> {nanosToIota(raffle.ticket_price)} IOTA</p>
                                             <p class="text-gray-800"><span class="font-bold">Tickets Sold:</span> {raffle.tickets_sold}</p>
                                             {#if raffle.winning_ticket == null && raffle.redemption_timestamp_ms - onChainClockTimestampMs > 0}
-                                            <p class="text-gray-800 col-span-1 sm:col-span-2"><span class="font-bold">Ticket Expected Value:</span> ~{Math.round(1000 * nanosToIota(raffle.prize_money/(raffle.tickets_sold + 1)))/1000} IOTA</p>
+                                            <p class="text-gray-800 col-span-1 sm:col-span-2"><span class="font-bold">Ticket Expected Value:</span> ~{roundFractional(nanosToIota(raffle.prize_money/(raffle.tickets_sold + 1)), 2)} IOTA</p>
                                             <p class="text-gray-800"><span class="font-bold">Ends in:</span> <span class="font-semibold text-blue-700">{timeHumanReadable(raffle.redemption_timestamp_ms - onChainClockTimestampMs)}</span></p>
                                            {:else if raffle.winning_ticket != null}
                                                <p class="text-gray-800 col-span-1 sm:col-span-2"><span class="font-bold">Winning Ticket:</span> <span class="font-mono bg-gray-100 px-1 rounded">{shortenHex(raffle.winning_ticket, 6)}</span></p>
