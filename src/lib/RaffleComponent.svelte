@@ -310,7 +310,7 @@
                                             <p class="text-gray-800 col-span-1 sm:col-span-2"><span class="font-bold">Ticket Expected Value:</span> ~{roundFractional(nanosToIota(raffle.prize_money/(raffle.tickets_sold + 1)), 2)} IOTA</p>
                                             <p class="text-gray-800"><span class="font-bold">Ends in:</span> <span class="font-semibold text-blue-700">{timeHumanReadable(raffle.redemption_timestamp_ms - onChainClockTimestampMs)}</span></p>
                                            {:else if raffle.winning_ticket != null}
-                                               <p class="text-gray-800 col-span-1 sm:col-span-2"><span class="font-bold">Winning Ticket:</span> <span class="font-mono bg-gray-100 px-1 rounded"></span>{shortenHex(raffle.winning_ticket, 6)}</p>
+                                               <p class="text-gray-800 col-span-1 sm:col-span-2"><span class="font-bold">Winning Ticket:</span> {shortenHex(raffle.winning_ticket, 6)}</p>
                                             {/if}
                                         </div>
                                     </div>
