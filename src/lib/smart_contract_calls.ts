@@ -2,8 +2,8 @@ import type { Wallet, WalletAccount, WindowRegisterWalletEvent } from '@mysten/w
 import { IotaClient } from '@iota/iota-sdk/client';
 import { Transaction } from '@iota/iota-sdk/transactions';
 
-let PACKAGE_ID = "0x907230b93bd2bb30b0aae756831464d6a514cf0bf12b9253840d6757e9c65164";
-let RAFFLE_APP_STATE_ID = "0x16353ac49929c66ad2c4e09e4ebcbd5dd7c959a919709061433fc8f4c3331a77";
+export let PACKAGE_ID = "0xa0863afa07156885b90a4dfc2619501e36cdb06b96b024b4f9a0ed83e61bf930";
+export let RAFFLE_APP_STATE_ID = "0x02b2eba471f25262aa26f88c1ebb3f3939d638ab7ca6cefc7698cb44a38b40c7";
 let MODULE_NAME = "raffle";
 let CLOCK_ID = "0x6";
 let GAS_BUDGET = 100_000_000;
@@ -15,7 +15,9 @@ export async function createRaffle(
     walletAccount: WalletAccount,
     initialLiquidity: number,
     ticketPrice: number,
-    durationSec: number
+    durationSec: number,
+    is_giveaway: boolean,
+    url: string,
 ) {
     // Set up the transaction
     let tx = new Transaction();
@@ -31,6 +33,8 @@ export async function createRaffle(
             tx.object(initialLiquidityCoin),
             tx.pure.u64(ticketPrice),
             tx.pure.u64(durationSec),
+            tx.pure.bool(is_giveaway),
+            tx.pure.string(url),
             tx.object.clock,
         ],
         typeArguments: ['0x2::iota::IOTA']
@@ -112,7 +116,45 @@ export async function buyTicket(
     })
     
     // Wait for transaction to complete and parse results
-    await iotaClient.waitForTransaction({ digest: transactionResult.digest });
+    // await iotaClient.waitForTransaction({ digest: transactionResult.digest });
+}
+
+export async function enterIntoGiveaway(
+    iotaClient: IotaClient,
+    wallet: Wallet,
+    walletAccount: WalletAccount,
+    raffleId: string,
+    who: string,
+) {
+    // Set up the transaction
+    let tx = new Transaction();
+    tx.setGasBudget(GAS_BUDGET);
+
+    let ticket = tx.moveCall({
+        package: PACKAGE_ID,
+        module: MODULE_NAME,
+        function: 'enter_into_giveaway',
+        arguments: [
+            tx.object(raffleId),
+            tx.pure.address(who)
+        ],
+        typeArguments: ['0x2::iota::IOTA']
+    });
+
+    let {bytes, signature} = 
+    await (wallet.features['iota:signTransaction']).signTransaction({
+        transaction: tx, 
+        account: walletAccount,
+    });
+
+    // Send signed transaction to the network for execution
+    let transactionResult = await iotaClient.executeTransactionBlock({
+        transactionBlock: bytes,
+        signature: signature,
+    })
+    
+    // Wait for transaction to complete and parse results
+    // await iotaClient.waitForTransaction({ digest: transactionResult.digest });
 }
 
 export async function resolveRaffle(
