@@ -38,21 +38,33 @@
             return;
         }
         // Make sure we get the right wallet
-        activeWallet = wallets.find((w) => w.name == "IOTA Wallet");
+        // console.log('wallets');
+        // console.log(wallets);
+        let eligibleWallets = wallets.filter((w) => {
+            return (
+                ["IOTA Wallet", "Nightly"].includes(w.name) &&
+                w.chains.includes("iota:testnet")
+            );
+        })
+        console.log('eligible wallets');
+        console.log(eligibleWallets)
+        activeWallet = eligibleWallets[0];
         if (!activeWallet) {
             console.log("No IOTA wallets found to connect to. Make sure you installed an IOTA web wallet.");
             return;
         }
-        console.log(activeWallet)
     }
 
     async function connectWallet() {
-        activeWallet.features['standard:connect'].connect();
+        await activeWallet.features['standard:connect'].connect();
+        activeWalletAccount = activeWallet.accounts[0];
         activeWallet.features['standard:events'].on("change", () => {
             activeWalletAccount = activeWallet.accounts[0];
             updateBalance();
         });
         delayedRenewState();
+        console.log(activeWallet)
+        console.log(activeWalletAccount)
     }
 
     async function initOnChainClockTimestampMs() {
@@ -131,9 +143,14 @@
         activeWalletOwnedTickets = ticketIds;
     }
 
+    function renewState() {
+        updateRaffles();
+        updateBalance();
+    }
+
     function delayedRenewState() {
-        setTimeout(() => updateRaffles (), 3_000);
-        setTimeout(() => updateRaffles (), 7_500);
+        setTimeout(() => renewState (), 3_000);
+        setTimeout(() => renewState (), 7_500);
     }
 
     async function updateRaffles() {
@@ -162,7 +179,7 @@
         completedRaffles.sort((r1, r2) => r1.redemption_timestamp_ms - r2.redemption_timestamp_ms);
         
         allRaffles = winningUnclaimedRaffles.concat(unresolvedRaffles).concat(lostUnclaimedRaffles).concat(completedRaffles);
-        console.log(allRaffles)
+        // console.log(allRaffles)
         updateWinningTicketOwner();
     }
 
