@@ -61,8 +61,6 @@
             updateBalance();
         });
         delayedRenewState();
-        console.log(activeWallet)
-        console.log(activeWalletAccount)
     }
 
     async function initOnChainClockTimestampMs() {
@@ -196,11 +194,6 @@
                 <h1 class="text-2xl">🎡 IOTA Raffle 🎡</h1>
                 <h2 class="text-sm md:text-md text-emerald-600">Testnet</h2>
             </div>
-            <div class="w-fit bg-white p-2 mt-2 rounded shadow-sm">
-                <p class="text-xs md:text-sm text-gray-600">
-                    On-Chain Time: {onChainClockTimestampMs > 0 ? new Date(onChainClockTimestampMs).toLocaleString() : 'Syncing...'}
-                </p>
-            </div>
         </div>
 
         <div class="flex flex-col space-y-8">
@@ -271,7 +264,7 @@
 
             </section>
 
-            <section class="bg-white p-6 rounded-lg shadow-md border border-gray-200 flex flex-col">
+            <section class="bg-white p-6 mb-6 rounded-lg shadow-md border border-gray-200 flex flex-col">
                 <div class="flex justify-between items-center border-b pb-3 mb-5">
                     <h1 class="text-2xl font-semibold text-gray-800">
                         Existing Raffles
@@ -360,7 +353,19 @@
                         {/each}
                      {/if}
                 </div> </section>
-        </div> </div> </div> <style>
+        </div> 
+        <div class="flex flex-col bg-white p-6 rounded-lg shadow-md border border-gray-200">
+            <p class="text-xs md:text-sm text-gray-600 mb-2">
+                On-Chain Time: {onChainClockTimestampMs > 0 ? new Date(onChainClockTimestampMs).toLocaleString() : 'Syncing...'}
+            </p>
+            <h1 class="font-bold text-2xl mb-2">What is this?</h1>
+            <p class="mb-4">This is a Raffle dApp on the IOTA Rebased network, created to celebrate the release of the IOTA Rebased network. You can start your own raffle, or join someone else's raffle by buying a ticket. The code for the Move smart contract behind this dApp can be found <a class="text-blue-500" href="https://github.com/teunvw14/move-raffle-v2" target="_blank">here</a>. </p>
+            <p class="text-xs">Created by Teun van Wezel</p>
+        </div>
+    </div>
+</div> 
+        
+<style>
     .overflow-y-auto::-webkit-scrollbar {
         width: 6px;
     }
