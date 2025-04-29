@@ -37,17 +37,15 @@
             console.log("No wallets found to connect to. Make sure you installed an IOTA web wallet.");
             return;
         }
-        // Make sure we get the right wallet
-        // console.log('wallets');
-        // console.log(wallets);
+
         let eligibleWallets = wallets.filter((w) => {
             return (
                 ["IOTA Wallet", "Nightly"].includes(w.name) &&
-                w.chains.includes("iota:testnet")
+                (w.chains.includes("iota:testnet") ||
+                 w.chains.includes("iota:mainnet"))
             );
         })
-        console.log('eligible wallets');
-        console.log(eligibleWallets)
+
         activeWallet = eligibleWallets[0];
         if (!activeWallet) {
             console.log("No IOTA wallets found to connect to. Make sure you installed an IOTA web wallet.");
@@ -193,11 +191,16 @@
 <div class="min-h-screen bg-gray-100 p-4 md:p-8 font-sans">
     <div class="max-w-2xl mx-auto">
 
-        <div class="flex justify-between mb-4 mx-4">
-            <h1 class="text-2xl">🎡 IOTA Raffle 🎡</h1>
-            <p class="text-sm text-gray-600 bg-white px-3 py-1 rounded shadow-sm">
-                On-Chain Time: {onChainClockTimestampMs > 0 ? new Date(onChainClockTimestampMs).toLocaleString() : 'Syncing...'}
-            </p>
+        <div class="flex flex-col justify-between mb-4 mx-4">
+            <div class="w-full flex flex-row justify-between">
+                <h1 class="text-2xl">🎡 IOTA Raffle 🎡</h1>
+                <h2 class="text-sm md:text-md text-emerald-600">Testnet</h2>
+            </div>
+            <div class="w-fit bg-white p-2 mt-2 rounded shadow-sm">
+                <p class="text-xs md:text-sm text-gray-600">
+                    On-Chain Time: {onChainClockTimestampMs > 0 ? new Date(onChainClockTimestampMs).toLocaleString() : 'Syncing...'}
+                </p>
+            </div>
         </div>
 
         <div class="flex flex-col space-y-8">
