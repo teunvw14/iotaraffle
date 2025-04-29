@@ -208,7 +208,7 @@
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <button
                             onclick={connectWallet}
-                            class="bg-orange-600 hover:bg-orange-400 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out disabled:opacity-60 disabled:cursor-not-allowed"
+                            class="bg-orange-500 hover:bg-orange-400 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out disabled:opacity-60 disabled:cursor-not-allowed"
                         >
                             {!!activeWalletAccount ? 'Wallet Connected ✅' : 'Connect Wallet'}
                         </button>
@@ -336,7 +336,7 @@
                                                 disabled={!activeWalletAccount}
                                                 class="w-full bg-yellow-400 hover:bg-yellow-500 text-black text-md font-bold py-1.5 px-3 rounded shadow-sm transition duration-150 ease-in-out cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed animate-pulse"
                                             >
-                                                💰 Claim Prize ({nanosToIota(raffle.prize_money)} IOTA) 💰
+                                                💰 Claim Prize ({roundFractional(nanosToIota(raffle.prize_money), 2)} IOTA) 💰
                                             </button>
                                         {/if}
 
