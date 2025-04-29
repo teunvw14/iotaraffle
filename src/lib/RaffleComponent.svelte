@@ -458,10 +458,10 @@
                                         </div>
                                         {/if}
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 mb-3 text-sm">
-                                            {#if (raffle.winning_ticket == null && raffle.creator == activeWalletAccount.address)}
-                                            <p class="font-bold text-lg text-cyan-500">Yours</p>
-                                            {/if}
                                             <div class="flex flex-row sm:flex-col sm:justify-between pb-1 ">
+                                                {#if (raffle.winning_ticket == null && raffle.creator == activeWalletAccount.address)}
+                                                <p class="font-bold text-lg text-cyan-500">Yours</p>
+                                                {/if}
                                                 <p class="text-gray-800 text-2xl mr-2"><span class="font-bold">Prize Pool</span> </p>
                                                 <p class="text-green-800 text-2xl sm:text-4xl">{roundFractional(nanosToIota(raffle.prize_money), 2)} IOTA</p>
                                             </div>
@@ -530,7 +530,7 @@
             <h1 class="font-bold text-2xl mb-2">What is this?</h1>
             <p class="mb-2">Start your own raffle, or join someone else's raffle by buying a ticket! IOTARaffle is a dApp the IOTA Rebased network, created to celebrate the release of the IOTA Rebased network. The code for the Move smart contract behind this dApp can be found <a class="text-blue-500" href="https://github.com/teunvw14/move-raffle-v2" target="_blank">here</a>. </p>
             <h1 class="font-bold text-xl mb-2">How it works</h1>
-            <p class="mb-4">You can buy tickets for a raffle until its resolution time. It then needs to be resolved, which will select a winning ticket. If you own the winning ticket, it will show at the top of the raffle list, and you can claim the prize money. </p>
+            <p class="mb-4">You can buy tickets for a raffle until its resolution time. It then needs to be resolved, which will select a winning ticket at random. If you own the winning ticket, it will show at the top of the raffle list, and you can claim the prize money. </p>
             <h1 class="font-bold text-xl mb-2">Giveaways</h1>
             <p class="mb-4">Giveaways are raffles for which you can't buy tickets. As a giveaway creator, you can create tickets for as many addresses as you'd like.</p>
             <p class="text-xs">Created by Teun van Wezel</p>
