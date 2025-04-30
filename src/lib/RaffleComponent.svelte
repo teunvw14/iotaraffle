@@ -27,8 +27,8 @@
 
     let allRaffles = $state([]);
     let allGiveaways = $state([]);
-    let showCompletedRaffles = $state(true);
-    let showCompletedGiveaways = $state(true);
+    let showCompletedRaffles = $state(false);
+    let showCompletedGiveaways = $state(false);
     let activeWalletOwnedTickets: string[] = $state([]);
 
     const iotaClient = new IotaClient({ url: getFullnodeUrl('testnet') });
