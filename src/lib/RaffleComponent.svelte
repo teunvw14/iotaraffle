@@ -214,7 +214,7 @@
     })
 </script>
 
-<div class="min-h-screen bg-gray-100 p-4 md:p-8 font-sans">
+<div class="min-h-screen bg-slate-100 p-4 md:p-8 font-sans">
     <div class="max-w-2xl mx-auto">
 
         <div class="flex flex-col justify-between mb-4 mx-4">
