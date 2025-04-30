@@ -207,15 +207,16 @@
     }
 
     onMount(() => {
+        updateRaffles();
+        console.log('hello')
         initializeWallet();
         connectWallet();
-        updateRaffles();
         initOnChainClockTimestampMs();
     })
 </script>
 
 <div class="min-h-screen bg-slate-100 p-4 md:p-8 font-sans">
-    <div class="max-w-2xl mx-auto">
+    <div class="max-w-xl mx-auto">
 
         <div class="flex flex-col justify-between mb-4 mx-4">
             <div class="w-full flex flex-row justify-between">
@@ -358,7 +359,7 @@
                                         🔗 <a href={raffle.url} class="hover:underline">{raffle.url}</a>
                                     </div>
                                     {/if}
-                                    {#if ( raffle.creator == activeWalletAccount.address)}
+                                    {#if ( !!activeWalletAccount && raffle.creator == activeWalletAccount.address)}
                                         <p class="font-bold text-lg text-red-500">Created by you</p>
                                     {/if}
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 mb-3 text-sm">
@@ -455,7 +456,7 @@
                                                 <span class="text-xs sm:text-base font-semibold bg-blue-500 text-white px-2 py-0.5 rounded-xl whitespace-nowrap">Active</span>
                                             {/if}
                                         </div>
-                                        {#if ( raffle.creator == activeWalletAccount.address)}
+                                        {#if ( !!activeWalletAccount && raffle.creator == activeWalletAccount.address)}
                                         <p class="font-bold text-lg text-red-500">Created by you</p>
                                         {/if}
                                         {#if raffle.url != ""}
@@ -479,7 +480,7 @@
                                         </div>
     
                                         <div class="flex flex-wrap items-center pt-3 border-t border-amber-200 mt-3">
-                                            {#if (raffle.winning_ticket == null && raffle.creator == activeWalletAccount.address)}
+                                            {#if ( !!activeWalletAccount && raffle.winning_ticket == null && raffle.creator == activeWalletAccount.address)}
                                             <label for="enterIntoGiveawayAddress" class="block text-md text-gray-700 text-sm sm:text-md">Address For New Participant:</label>
                                             <input id="enterIntoGiveawayAddress" bind:value={raffle.send_ticket_to}
                                                 lang="en" required
