@@ -338,25 +338,28 @@
                      {:else}
                         {#each allRaffles as raffle}
                             {#if (raffle.prize_money != 0 && (!raffle.winning_ticket || ownsTicket(raffle.winning_ticket))) || showCompletedRaffles}
-                                <div class="border-2 border-amber-400 bg-gradient-to-br from-amber-200 to-red-400 rounded-lg p-4 shadow-xl transition-shadow hover:shadow-md">
+                                <div class="border-2 border-amber-400 bg-gradient-to-tr from-amber-200 to-red-400 rounded-lg p-6 shadow-xl transition-shadow hover:shadow-md">
                                     <div class="flex justify-between items-start mb-1">
-                                        <a href={getObjectExplorerUrl(explorerUrl, raffle.id)} target="_blank" rel="noopener noreferrer" class="text-sm font-mono text-slate-500 hover:underline break-all pr-4" title={`Raffle ID: ${raffle.id}`}>
-                                             {shortenHex(raffle.id, 8)}
+                                        <a href={getObjectExplorerUrl(explorerUrl, raffle.id)} target="_blank" rel="noopener noreferrer" class="text-sm font-mono text-slate-600 hover:underline break-all pr-4" title={`Raffle ID: ${raffle.id}`}>
+                                             {shortenHex(raffle.id, 4)}
                                         </a>
                                         {#if raffle.prize_money == 0 && raffle.winning_ticket != null}
-                                             <span class="text-xs font-semibold bg-gray-400 text-white px-2 py-0.5 rounded-full whitespace-nowrap">Completed</span>
+                                             <span class="text-xs sm:text-base font-semibold bg-gray-400 text-white px-2 py-0.5 rounded-full whitespace-nowrap">Completed</span>
                                          {:else if raffle.winning_ticket != null}
-                                             <span class="text-xs font-semibold bg-green-600 text-white px-2 py-0.5 rounded-full whitespace-nowrap">Prize Ready to Claim</span>
+                                             <span class="text-xs sm:text-base font-semibold bg-green-600 text-white px-2 py-0.5 rounded-full whitespace-nowrap">Prize Ready to Claim</span>
                                         {:else if raffle.redemption_timestamp_ms - onChainClockTimestampMs <= 0}
-                                            <span class="text-xs font-semibold bg-purple-500 text-white px-2 py-0.5 rounded-full whitespace-nowrap">Awaiting Resolution</span>
+                                            <span class="text-xs sm:text-base font-semibold bg-purple-500 text-white px-2 py-0.5 rounded-full whitespace-nowrap">Awaiting Resolution</span>
                                         {:else}
-                                            <span class="text-xs font-semibold bg-blue-500 text-white px-2 py-0.5 rounded-full whitespace-nowrap">Active</span>
+                                            <span class="text-xs sm:text-base font-semibold bg-blue-500 text-white px-2 py-0.5 rounded-full whitespace-nowrap">Active</span>
                                         {/if}
                                     </div>
                                     {#if raffle.url != ""}
                                     <div class="text-sm mb-3">
                                         🔗 <a href={raffle.url} class="hover:underline">{raffle.url}</a>
                                     </div>
+                                    {/if}
+                                    {#if ( raffle.creator == activeWalletAccount.address)}
+                                        <p class="font-bold text-lg text-red-500">Created by you</p>
                                     {/if}
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 mb-3 text-sm">
                                         <div class="flex flex-row sm:flex-col sm:justify-between pb-1 ">
@@ -437,21 +440,24 @@
                          {:else}
                             {#each allGiveaways as raffle}
                                 {#if (raffle.prize_money != 0 && (!raffle.winning_ticket || ownsTicket(raffle.winning_ticket))) || showCompletedGiveaways}
-                                    <div class="border-2 border-amber-400 bg-gradient-to-br from-amber-200 to-red-400 rounded-lg p-4 shadow-xl transition-shadow hover:shadow-md">
+                                    <div class="border-2 border-amber-400 bg-gradient-to-tl from-blue-100 to-emerald-400 rounded-lg p-6 shadow-xl transition-shadow hover:shadow-md">
                                         <div class="flex justify-between items-start mb-1">
-                                            <a href={getObjectExplorerUrl(explorerUrl, raffle.id)} target="_blank" rel="noopener noreferrer" class="text-sm font-mono text-slate-500 hover:underline break-all pr-4" title={`Raffle ID: ${raffle.id}`}>
-                                                 {shortenHex(raffle.id, 8)}
+                                            <a href={getObjectExplorerUrl(explorerUrl, raffle.id)} target="_blank" rel="noopener noreferrer" class="text-xs sm:text-sm font-mono text-slate-600 hover:underline break-all pr-4" title={`Raffle ID: ${raffle.id}`}>
+                                                 {shortenHex(raffle.id, 4)}
                                             </a>
                                             {#if raffle.prize_money == 0 && raffle.winning_ticket != null}
-                                                 <span class="text-xs font-semibold bg-gray-400 text-white px-2 py-0.5 rounded-full whitespace-nowrap">Completed</span>
+                                                 <span class="text-xs sm:text-base font-semibold bg-gray-400 text-white px-2 py-0.5 rounded-xl whitespace-nowrap">Completed</span>
                                              {:else if raffle.winning_ticket != null}
-                                                 <span class="text-xs font-semibold bg-green-600 text-white px-2 py-0.5 rounded-full whitespace-nowrap">Prize Ready to Claim</span>
+                                                 <span class="text-xs sm:text-base font-semibold bg-green-600 text-white px-2 py-0.5 rounded-xl whitespace-nowrap">Prize Ready to Claim</span>
                                             {:else if raffle.redemption_timestamp_ms - onChainClockTimestampMs <= 0}
-                                                <span class="text-xs font-semibold bg-purple-500 text-white px-2 py-0.5 rounded-full whitespace-nowrap">Awaiting Resolution</span>
+                                                <span class="text-xs sm:text-base font-semibold bg-purple-500 text-white px-2 py-0.5 rounded-xl whitespace-nowrap">Awaiting Resolution</span>
                                             {:else}
-                                                <span class="text-xs font-semibold bg-blue-500 text-white px-2 py-0.5 rounded-full whitespace-nowrap">Active</span>
+                                                <span class="text-xs sm:text-base font-semibold bg-blue-500 text-white px-2 py-0.5 rounded-xl whitespace-nowrap">Active</span>
                                             {/if}
                                         </div>
+                                        {#if ( raffle.creator == activeWalletAccount.address)}
+                                        <p class="font-bold text-lg text-red-500">Created by you</p>
+                                        {/if}
                                         {#if raffle.url != ""}
                                         <div class="text-sm mb-3">
                                             🔗 <a href={raffle.url} class="hover:underline">{raffle.url}</a>
@@ -459,9 +465,6 @@
                                         {/if}
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 mb-3 text-sm">
                                             <div class="flex flex-row sm:flex-col sm:justify-between pb-1 ">
-                                                {#if (raffle.winning_ticket == null && raffle.creator == activeWalletAccount.address)}
-                                                <p class="font-bold text-lg text-cyan-500">Yours</p>
-                                                {/if}
                                                 <p class="text-gray-800 text-2xl mr-2"><span class="font-bold">Prize Pool</span> </p>
                                                 <p class="text-green-800 text-2xl sm:text-4xl">{roundFractional(nanosToIota(raffle.prize_money), 2)} IOTA</p>
                                             </div>
@@ -477,17 +480,17 @@
     
                                         <div class="flex flex-wrap items-center pt-3 border-t border-amber-200 mt-3">
                                             {#if (raffle.winning_ticket == null && raffle.creator == activeWalletAccount.address)}
-                                            <label for="enterIntoGiveawayAddress" class="block text-md text-gray-700">Address For New Participant:</label>
+                                            <label for="enterIntoGiveawayAddress" class="block text-md text-gray-700 text-sm sm:text-md">Address For New Participant:</label>
                                             <input id="enterIntoGiveawayAddress" bind:value={raffle.send_ticket_to}
                                                 lang="en" required
-                                                class="mt-1 mb-2 block w-full rounded-md border-2 shadow-sm bg-white border-indigo-200 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-2"
+                                                class="mt-1 mb-2 block w-full rounded-md border-2 shadow-sm bg-white hover:bg-green-100 border-green-500 sm:text-sm p-2"
                                                 >
                                                 <button
                                                     onclick={()=>{enterIntoGiveaway(iotaClient, activeWallet, activeWalletAccount, raffle.id, raffle.send_ticket_to); delayedRenewState()}}
                                                     disabled={!activeWalletAccount || raffle.ticket_price > activeWalletAccountBalance}
-                                                    class="w-full bg-green-500 hover:bg-green-600 text-white mb-1 text-md font-semibold py-1.5 px-3 rounded shadow-sm transition duration-150 ease-in-out cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                                    class="w-full bg-green-500 hover:bg-green-600 text-white mb-1 text-sm sm:text-md font-semibold py-1.5 px-3 rounded shadow-sm transition duration-150 ease-in-out cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                                 >
-                                                📝 Add Address to Giveaway 📝
+                                                📝 Add Participant 📝
                                                 </button>
                                             {/if}
     
