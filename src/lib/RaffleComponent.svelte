@@ -16,7 +16,20 @@
     let newRaffleInitialLiquidityNanos = $derived(newRaffleInitialLiquidity * 1_000_000_000)
     let newRaffleTicketPrice = $state(0.1);
     let newRaffleTicketPriceNanos = $derived(newRaffleTicketPrice * 1_000_000_000)
-    let newRaffleDurationSec = $state(100);
+    let newRaffleDuration = $state(1);
+    let newRaffleDurationScale = $state("hours");
+    let newRaffleDurationScaled = $derived.by(() => {
+        switch (newRaffleDurationScale) {
+            case "seconds": 
+                return newRaffleDuration;
+            case "minutes":
+                return newRaffleDuration * 60;
+            case "hours":
+                return newRaffleDuration * 3600;
+            case "days":
+                return newRaffleDuration * 86400;
+        } 
+    })
     let newRaffleUrl = $state("");
     let newRaffleIsGiveaway = $state(false);
 
@@ -254,38 +267,58 @@
                 {#if activeWalletAccount}
                     <div class="space-y-4">
                         <div>
-                            <label for="initialLiquidity" class="block text-sm text-gray-700 mb-1">Initial Liquidity (min 5 IOTA)*</label>
+                            <label for="initialLiquidity" class="block font-bold text-sm text-gray-700 mb-1">Initial Liquidity (IOTA)*</label>
+                            <p class="text-xs">Initial liquidity / prize pool for the raffle or giveaway. You pay this when you create the raffle or giveaway. This is not a fee, it goes into the raffle or giveaway prize pool. Minimum is 5 IOTA to prevent spam.</p>
                             <input id="initialLiquidity" bind:value={newRaffleInitialLiquidity}
-                                type="number" lang="en" placeholder="5.0" step="0.000000001" min="5" required
-                                class="mt-1 block w-full rounded-md border-2 shadow-sm bg-white border-indigo-200 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-2"
+                            type="number" lang="en" placeholder="5.0" step="0.000000001" min="5" required
+                            class="mt-1 block w-full rounded-md border-2 shadow-sm bg-white border-indigo-200 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-2"
                             >
                         </div>
-
+                        
                         {#if !newRaffleIsGiveaway}
                         <div>
-                            <label for="ticketPrice" class="block text-sm text-gray-700 mb-1">Ticket Price: (IOTA)*</label>
+                            <label for="ticketPrice" class="block font-bold text-sm text-gray-700 mb-1">Ticket Price: (IOTA)*</label>
+                            <p class="text-xs">Price of a raffle ticket. Users can buy as many raffle tickets as they want.</p>
                             <input id="ticketPrice" bind:value={newRaffleTicketPrice}
-                                type="number" lang="en" placeholder="0.1" step="0.000000001" min="0.0" required
-                                class="mt-1 block w-full rounded-md border-2 shadow-sm bg-white border-indigo-200 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-2"
+                            type="number" lang="en" placeholder="0.1" step="0.000000001" min="0.0" required
+                            class="mt-1 block w-full rounded-md border-2 shadow-sm bg-white border-indigo-200 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-2"
                             >
                         </div>
                         {/if}
                         <div>
-                            <label for="duration" class="block text-sm text-gray-700 mb-1">Duration of the Raffle / Giveaway (seconds)*</label>
-                            <input id="duration" bind:value={newRaffleDurationSec}
-                                type="number" lang="en" placeholder="100" step="1" min="10" required
-                                class="mt-1 block w-full rounded-md border-2 shadow-sm bg-white border-indigo-200 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-2"
-                            >
+                            <label for="duration" class="block font-bold text-sm text-gray-700 mb-1">Duration of the Raffle / Giveaway*</label>
+                            <p class="text-xs">How long the raffle or giveaway should last. After this time, the raffle  or giveaway can be "resolved", which means that a winner is picked. The winner can then claim the prize through this web page.</p>
+                            <div class="flex flex-row w-full border-2 bg-white border-indigo-200 mt-1">
+                                <input id="duration" bind:value={newRaffleDuration}
+                                type="number" lang="en" placeholder="1" step="1" min="1" required
+                                class="block w-[70%] rounded-md shadow-sm bg-white focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-2"
+                                >
+                                <select bind:value={newRaffleDurationScale} class="w-[30%] rounded-md">
+                                    <option value=seconds>
+                                        seconds
+                                    </option>
+                                    <option value=minutes>
+                                        minutes
+                                    </option>
+                                    <option value=hours>
+                                        hours
+                                    </option>
+                                    <option value=days>
+                                        day
+                                    </option>
+                                </select>
+                            </div>
                         </div>
-
+                        
                         <div>
-                            <label for="initialLiquidity" class="block text-sm text-gray-700 mb-1">Link to Raffle / Giveaway announcement</label>
+                            <label for="initialLiquidity" class="block font-bold text-sm text-gray-700 mb-1">Link to Raffle / Giveaway Announcement</label>
+                            <p class="text-xs">Link to the project behind the raffle or giveaway, or link to social media post where the raffle or giveaway was announced. Not mandatory.</p>
                             <input id="initialLiquidity" bind:value={newRaffleUrl}
                                 class="mt-1 block w-full rounded-md border-2 shadow-sm bg-white border-indigo-200 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-2"
                             >
                         </div>
-                        <div class="w-full">
-                            <p class="text-sm text-gray-700">Would you like to hold a Raffle or a Giveaway?</p>
+                        <div class="w-full mb-2">
+                            <p class="text-sm font-bold text-gray-700">Would you like to hold a Raffle or a Giveaway?</p>
                         </div>
                         <div class="flex flex-row">
                             {#if newRaffleIsGiveaway}
@@ -307,7 +340,7 @@
 
                         <div class="pt-3 w-full">
                              <button    
-                                 onclick={() => {createRaffle(iotaClient, activeWallet, activeWalletAccount, newRaffleInitialLiquidityNanos, newRaffleTicketPriceNanos, newRaffleDurationSec, newRaffleIsGiveaway, newRaffleUrl); delayedRenewState()}}
+                                 onclick={() => {createRaffle(iotaClient, activeWallet, activeWalletAccount, newRaffleInitialLiquidityNanos, newRaffleTicketPriceNanos, newRaffleDurationScaled, newRaffleIsGiveaway, newRaffleUrl); delayedRenewState()}}
                                  class="w-full h-16 bg-indigo-600 hover:bg-indigo-700 text-white text-xl font-bold py-2 px-6 rounded transition duration-150 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed hover:cursor-pointer"
                                  disabled={!activeWalletAccount}
                              >
