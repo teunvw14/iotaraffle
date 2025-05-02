@@ -254,7 +254,7 @@
                 {#if activeWalletAccount}
                     <div class="space-y-4">
                         <div>
-                            <label for="initialLiquidity" class="block text-sm text-gray-700 mb-1">Initial Liquidity (min 5 IOTA)</label>
+                            <label for="initialLiquidity" class="block text-sm text-gray-700 mb-1">Initial Liquidity (min 5 IOTA)*</label>
                             <input id="initialLiquidity" bind:value={newRaffleInitialLiquidity}
                                 type="number" lang="en" placeholder="5.0" step="0.000000001" min="5" required
                                 class="mt-1 block w-full rounded-md border-2 shadow-sm bg-white border-indigo-200 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-2"
@@ -263,7 +263,7 @@
 
                         {#if !newRaffleIsGiveaway}
                         <div>
-                            <label for="ticketPrice" class="block text-sm text-gray-700 mb-1">Ticket Price</label>
+                            <label for="ticketPrice" class="block text-sm text-gray-700 mb-1">Ticket Price: (IOTA)*</label>
                             <input id="ticketPrice" bind:value={newRaffleTicketPrice}
                                 type="number" lang="en" placeholder="0.1" step="0.000000001" min="0.0" required
                                 class="mt-1 block w-full rounded-md border-2 shadow-sm bg-white border-indigo-200 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-2"
@@ -271,7 +271,7 @@
                         </div>
                         {/if}
                         <div>
-                            <label for="duration" class="block text-sm text-gray-700 mb-1">Raffle / Giveaway Duration (seconds)</label>
+                            <label for="duration" class="block text-sm text-gray-700 mb-1">Duration of the Raffle / Giveaway (seconds)*</label>
                             <input id="duration" bind:value={newRaffleDurationSec}
                                 type="number" lang="en" placeholder="100" step="1" min="10" required
                                 class="mt-1 block w-full rounded-md border-2 shadow-sm bg-white border-indigo-200 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-2"
@@ -279,10 +279,13 @@
                         </div>
 
                         <div>
-                            <label for="initialLiquidity" class="block text-sm text-gray-700 mb-1">Raffle / Giveaway / Project URL</label>
+                            <label for="initialLiquidity" class="block text-sm text-gray-700 mb-1">Link to Raffle / Giveaway announcement</label>
                             <input id="initialLiquidity" bind:value={newRaffleUrl}
                                 class="mt-1 block w-full rounded-md border-2 shadow-sm bg-white border-indigo-200 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-2"
                             >
+                        </div>
+                        <div class="w-full">
+                            <p class="text-sm text-gray-700">Would you like to hold a Raffle or a Giveaway?</p>
                         </div>
                         <div class="flex flex-row">
                             {#if newRaffleIsGiveaway}
@@ -291,13 +294,13 @@
                                 class="w-full bg-white rounded text-md p-2 border-2 border-amber-400 hover:cursor-pointer hover:bg-amber-100"
                             >
                             🎰 Make It a Raffle 🎰
-                        </button>
-                        {:else}
-                        <button 
-                            onclick={() => {newRaffleIsGiveaway = true}}
-                            class="w-full bg-white rounded text-md p-2 border-2 border-lime-600 hover:cursor-pointer hover:bg-green-100"
-                        >
-                        🎁 Make It a Giveaway 🎁
+                            </button>
+                            {:else}
+                            <button 
+                                onclick={() => {newRaffleIsGiveaway = true}}
+                                class="w-full bg-white rounded text-md p-2 border-2 border-lime-600 hover:cursor-pointer hover:bg-green-100"
+                            >
+                            🎁 Make It a Giveaway 🎁
                             </button>
                             {/if}
                         </div>
