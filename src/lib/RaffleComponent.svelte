@@ -44,7 +44,7 @@
     let showCompletedGiveaways = $state(false);
     let activeWalletOwnedTickets: string[] = $state([]);
 
-    const iotaClient = new IotaClient({ url: getFullnodeUrl('testnet') });
+    const iotaClient = new IotaClient({ url: 'https://api.mainnet.iota.cafe' });
 
     async function initializeWallet() {
         let wallets = getWallets().get();
@@ -54,14 +54,13 @@
         }
 
         let eligibleWallets = wallets.filter((w) => {
-            return (
-                ["IOTA Wallet", "Nightly"].includes(w.name) &&
-                (w.chains.includes("iota:testnet") ||
-                 w.chains.includes("iota:mainnet"))
-            );
+            return ["IOTA Wallet"].includes(w.name) &&
+                 w.chains.includes("iota:mainnet");
         })
-
         activeWallet = eligibleWallets[0];
+
+        // console.log("eligibleWallets");
+        // console.log(eligibleWallets);
         if (!activeWallet) {
             console.log("No IOTA wallets found to connect to. Make sure you installed an IOTA web wallet.");
             return;
@@ -69,6 +68,7 @@
     }
 
     async function connectWallet() {
+        // console.log(await activeWallet.features['standard:connect'])
         await activeWallet.features['standard:connect'].connect();
         activeWalletAccount = activeWallet.accounts[0];
         activeWallet.features['standard:events'].on("change", () => {
@@ -221,7 +221,6 @@
 
     onMount(() => {
         updateRaffles();
-        console.log('hello')
         initializeWallet();
         connectWallet();
         initOnChainClockTimestampMs();
@@ -234,7 +233,6 @@
         <div class="flex flex-col justify-between mb-4 mx-4">
             <div class="w-full flex flex-row justify-between">
                 <h1 class="text-2xl">🎡 IOTA Raffle 🎡</h1>
-                <h2 class="text-sm md:text-md text-emerald-600">Testnet</h2>
             </div>
         </div>
 
@@ -248,7 +246,7 @@
                 <div class="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-md">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <button
-                            onclick={connectWallet}
+                            onclick={()=> {initializeWallet(); connectWallet();} }
                             class="bg-orange-500 hover:bg-orange-400 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out disabled:opacity-60 disabled:cursor-not-allowed"
                         >
                             {!!activeWalletAccount ? 'Wallet Connected ✅' : 'Connect Wallet'}
@@ -385,7 +383,7 @@
                                          {:else if raffle.winning_ticket != null}
                                              <span class="text-xs sm:text-base font-semibold bg-green-600 text-white px-2 py-0.5 rounded-full whitespace-nowrap">Prize Ready to Claim</span>
                                         {:else if raffle.redemption_timestamp_ms - onChainClockTimestampMs <= 0}
-                                            <span class="text-xs sm:text-base font-semibold bg-purple-500 text-white px-2 py-0.5 rounded-full whitespace-nowrap">Awaiting Resolution</span>
+                                            <span class="text-xs sm:text-base font-semibold bg-purple-500 text-white px-2 py-0.5 rounded-full whitespace-nowrap">Ready to Pick Winner</span>
                                         {:else}
                                             <span class="text-xs sm:text-base font-semibold bg-blue-500 text-white px-2 py-0.5 rounded-full whitespace-nowrap">Active</span>
                                         {/if}
@@ -446,7 +444,7 @@
                                                 disabled={!activeWalletAccount}
                                                 class="w-full bg-purple-500 hover:bg-purple-600 text-white text-md font-semibold py-1.5 px-3 rounded shadow-sm transition duration-150 ease-in-out cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
-                                            🏁 Resolve Raffle 🏁
+                                            🏁 Pick Raffle Winner 🏁
                                             </button>
                                          {/if}
 
@@ -547,7 +545,7 @@
                                                     disabled={!activeWalletAccount}
                                                     class="w-full bg-purple-500 hover:bg-purple-600 text-white text-md font-semibold py-1.5 px-3 rounded shadow-sm transition duration-150 ease-in-out cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                                 >
-                                                🏁 Resolve Giveaway 🏁
+                                                🏁 Pick Giveaway Winner 🏁
                                                 </button>
                                              {/if}
     

@@ -2,8 +2,8 @@ import type { Wallet, WalletAccount, WindowRegisterWalletEvent } from '@mysten/w
 import { IotaClient } from '@iota/iota-sdk/client';
 import { Transaction } from '@iota/iota-sdk/transactions';
 
-export let PACKAGE_ID = "0xa0863afa07156885b90a4dfc2619501e36cdb06b96b024b4f9a0ed83e61bf930";
-export let RAFFLE_APP_STATE_ID = "0x02b2eba471f25262aa26f88c1ebb3f3939d638ab7ca6cefc7698cb44a38b40c7";
+export let PACKAGE_ID = "0x66a5e577662739d15b2add5ec536cf5e48c9bffd00b05d6e9c0c17819b4584d7";
+export let RAFFLE_APP_STATE_ID = "0x114b84deb7d46b0013940a3cb85d74cd61ec37857ee5ae51825ee8f7f037b083";
 let MODULE_NAME = "raffle";
 let CLOCK_ID = "0x6";
 let GAS_BUDGET = 100_000_000;
