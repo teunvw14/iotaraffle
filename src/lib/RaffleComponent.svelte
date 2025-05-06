@@ -54,7 +54,7 @@
         }
 
         let eligibleWallets = wallets.filter((w) => {
-            return ["IOTA Wallet"].includes(w.name) &&
+            return ["IOTA Wallet", "Nightly"].includes(w.name) &&
                  w.chains.includes("iota:mainnet");
         })
         activeWallet = eligibleWallets[0];
@@ -408,7 +408,7 @@
                                             <p class="text-gray-800 col-span-1 sm:col-span-2"><span class="font-bold">Ticket Expected Value:</span> ~{roundFractional(nanosToIota(raffle.prize_money/(raffle.tickets_sold + 1)), 2)} IOTA</p>
                                             <p class="text-gray-800"><span class="font-bold">Ends in:</span> <span class="font-semibold text-blue-700">{timeHumanReadable(raffle.redemption_timestamp_ms - onChainClockTimestampMs)}</span></p>
                                            {:else if raffle.winning_ticket != null}
-                                               <p class="text-gray-800 col-span-1 sm:col-span-2"><span class="font-bold">Winning Ticket:</span> {shortenHex(raffle.winning_ticket, 6)}</p>
+                                               <p class="text-gray-800 col-span-1 sm:col-span-2"><span class="font-bold">Winning Ticket:</span> <a href={getObjectExplorerUrl(explorerUrl, raffle.winning_ticket)}> {shortenHex(raffle.winning_ticket, 6)}</a></p>
                                             {/if}
                                         </div>
                                     </div>
