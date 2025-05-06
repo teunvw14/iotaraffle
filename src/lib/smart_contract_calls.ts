@@ -2,6 +2,8 @@ import type { Wallet, WalletAccount, WindowRegisterWalletEvent } from '@mysten/w
 import { IotaClient } from '@iota/iota-sdk/client';
 import { Transaction } from '@iota/iota-sdk/transactions';
 
+import { getObjectExplorerUrl } from './util';
+
 export let PACKAGE_ID = "0x66a5e577662739d15b2add5ec536cf5e48c9bffd00b05d6e9c0c17819b4584d7";
 export let RAFFLE_APP_STATE_ID = "0x114b84deb7d46b0013940a3cb85d74cd61ec37857ee5ae51825ee8f7f037b083";
 let MODULE_NAME = "raffle";
@@ -152,7 +154,6 @@ export async function enterIntoGiveaway(
         transactionBlock: bytes,
         signature: signature,
     })
-    
     // Wait for transaction to complete and parse results
     // await iotaClient.waitForTransaction({ digest: transactionResult.digest });
 }
